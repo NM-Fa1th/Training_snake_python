@@ -41,7 +41,7 @@ def blitWalls(suf, color, size, map):
         y = i//10 * size
         if(map[i] == 1):
             pygame.draw.rect(suf, color, [x, y, size, size])
-            msg(str(map[i]), red, x + size/2, y)
+            #msg(str(map[i]), red, x + size/2, y)
             
 def game():
     
@@ -59,16 +59,13 @@ def game():
     
     speed = 3
     
-    btn_left = pygame.Rect((540 - 128, 1700 + 128), (128,128))
-    btn_right = pygame.Rect((540+128, 1700 + 128), (128, 128))
-    btn_up = pygame.Rect((540, 1700), (128, 128))
-    btn_down = pygame.Rect((540, 1700 + 256), (128, 128))
-    
-    btn_restart = pygame.Rect((620, 1350), (320, 128))
+    #create map
     map = pygame.Rect((map_margin, map_margin), (map_resolution, map_resolution))
     
+    #create game
     main_game = MAIN(window, cell_size, map_size, map_margin)
     
+    #timer to read input
     SCREEN_UPDATE = pygame.USEREVENT
     pygame.time.set_timer(SCREEN_UPDATE, int(1000/speed))
     
@@ -78,35 +75,22 @@ def game():
         
         for ev in pygame.event.get():
             if ev.type == QUIT:
-                pygame.quit()
-                sys.exit()
+                main_game.game_over()
             if ev.type == SCREEN_UPDATE:
                 main_game.update()
-            if ev.type == MOUSEBUTTONDOWN:
-                if btn_left.collidepoint(ev.pos):
-                    if main_game.snake.direction.x != 1:
-                        main_game.snake.direction = Vector2(-1, 0)
-                elif btn_right.collidepoint(ev.pos):
-                    if main_game.snake.direction.x != -1:
-                        main_game.snake.direction = Vector2(1, 0)
-                elif btn_up.collidepoint(ev.pos):
-                    if main_game.snake.direction.y != 1:
-                        main_game.snake.direction = Vector2(0, -1)
-                elif btn_down.collidepoint(ev.pos):
-                    if main_game.snake.direction.y != -1:
-                        main_game.snake.direction = Vector2(0, 1)
-                #elif btn_restart.collidepoint(ev.pos):
+            if ev.type == MOUSEBUTTONDOWN or ev.type == KEYDOWN:
+                main_game.handle_user_input(ev)
 
+        #draw bg
         window.fill((100, 140, 0))
+        
+        #draw map
         window.fill((35, 50, 0), map)
+        
+        #draw dynamic objects
         main_game.draw_elements()
         
-        window.fill(blue, btn_left, 1)
-        window.fill(blue, btn_right, 1)
-        window.fill(blue, btn_up, 1)
-        window.fill(blue, btn_down, 1)
-        
-        window.fill(blue, btn_restart)
+        main_game.control_keys.draw_btns()
 
         pygame.display.update()
         clock.tick(fps)
