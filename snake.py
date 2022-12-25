@@ -10,9 +10,7 @@ from main import MAIN
 
 pygame.init()
 # Resolution is ignored on Android
-window = pygame.display.set_mode((720, 1080), pygame.DOUBLEBUF,  32)
-
-dis_w, dis_h = window.get_size()
+window = pygame.display.set_mode((1080, 720), pygame.DOUBLEBUF,  32)
 
 red=(255,0,0)
 green=(0,255,0)
@@ -41,31 +39,27 @@ def blitWalls(suf, color, size, map):
         y = i//10 * size
         if(map[i] == 1):
             pygame.draw.rect(suf, color, [x, y, size, size])
-            #msg(str(map[i]), red, x + size/2, y)
+            msg(str(map[i]), red, x + size/2, y)
             
 def game():
     
-    game_over = False
+    #game_over = False
     
     map_size = 11
     #cell_size = int(dis_w/map_size)
     cell_size = 64
     map_resolution = cell_size * map_size
-    map_margin = dis_w/2 - map_resolution/2
     
     clock = pygame.time.Clock()
 
     fps=30
     
-    speed = 3
-    
-    #create map
-    map = pygame.Rect((map_margin, map_margin), (map_resolution, map_resolution))
+    speed = 1
     
     #create game
-    main_game = MAIN(window, cell_size, map_size, map_margin)
+    main_game = MAIN(window, cell_size, map_size, map_resolution)
     
-    #timer to read input
+    #timer to update
     SCREEN_UPDATE = pygame.USEREVENT
     pygame.time.set_timer(SCREEN_UPDATE, int(1000/speed))
     
@@ -84,13 +78,8 @@ def game():
         #draw bg
         window.fill((100, 140, 0))
         
-        #draw map
-        window.fill((35, 50, 0), map)
-        
-        #draw dynamic objects
-        main_game.draw_elements()
-        
-        main_game.control_keys.draw_btns()
+        #draw world
+        main_game.draw_world()
 
         pygame.display.update()
         clock.tick(fps)

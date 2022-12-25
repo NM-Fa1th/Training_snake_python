@@ -5,16 +5,39 @@ from pygame.math import Vector2
 from fruit import FRUIT
 from player import SNAKE
 from control_panel import CONTROL_PANEL
+from message import MESSAGE
 
 class MAIN:
-    def __init__(self, window, cell_size, map_size, map_pos):
-        self.apple_image = pygame.image.load("apple.png").convert_alpha()
-        self.fruit = FRUIT(5, 5, window, cell_size, map_size, map_size, self.apple_image, map_pos)
-        self.snake = SNAKE(window, cell_size, map_pos)
+    def __init__(self, window, cell_size, map_size, map_resolution):
+        
+        self.window = window
+        
+        self.dis_w, self.dis_h = self.window.get_size()
+        
+        self.orientation = 'vertical'
+        
+        self.map_margin = 10
+        
+        self.map_resolution = map_resolution
+        
         self.control_keys = CONTROL_PANEL(580, 1700, window)
-        #create panel
+        
+        self.hor1, self.hor2 = MESSAGE(500, 25, self.window), MESSAGE(500, 50, self.window)
+        
+        self.check_orientation()
+        
+        self.map = pygame.Rect((self.map_margin, self.map_margin), (map_resolution, map_resolution))
+        
+        self.apple_image = pygame.image.load("apple.png").convert_alpha()
+        self.fruit = FRUIT(5, 5, window, cell_size, map_size, map_size, self.apple_image, self.map_margin)
+        self.snake = SNAKE(window, cell_size, self.map_margin)
+        
+
                 
     def update(self):
+         self.check_orientation()
+         self.map = pygame.Rect((self.map_margin, self.map_margin), (self.map_resolution, self.map_resolution))
+         
          self.snake.move_snake()
          self.check_collision()
          self.check_fail()
@@ -22,6 +45,7 @@ class MAIN:
     def draw_elements(self):
          self.fruit.draw_fruit()
          self.snake.draw_snake()
+
          
     def check_collision(self):
           if self.fruit.pos == self.snake.body[0]:
@@ -41,16 +65,41 @@ class MAIN:
         sys.exit()
         
     def handle_user_input(self, ev):
+            if (ev.type == MOUSEBUTTONDOWN and self.control_keys.btn_left.collidepoint(ev.pos)) or (ev.type == KEYDOWN  and ev.key == K_LEFT):
+                if self.snake.direction.x != 1:
+                    self.snake.direction = Vector2(-1, 0)
+            elif (ev.type == MOUSEBUTTONDOWN and self.control_keys.btn_right.collidepoint(ev.pos)) or (ev.type == KEYDOWN and ev.key == K_RIGHT):
+                if self.snake.direction.x != -1:
+                    self.snake.direction = Vector2(1, 0)
+            elif (ev.type == MOUSEBUTTONDOWN and self.control_keys.btn_up.collidepoint(ev.pos)) or (ev.type == KEYDOWN and ev.key == K_UP):
+                if self.snake.direction.y != 1:
+                    self.snake.direction = Vector2(0, -1)
+            elif (ev.type == MOUSEBUTTONDOWN and self.control_keys.btn_down.collidepoint(ev.pos)) or (ev.type == KEYDOWN and ev.key == K_DOWN):
+                if self.snake.direction.y != -1:
+                    self.snake.direction = Vector2(0, 1)
+                    
+    def check_orientation(self):
+        self.dis_w, self.dis_h = self.window.get_size()
+        if self.dis_w < self.dis_h:
+            self.orientation = "vertical"
+            self.hor2.set_msg("ver")
+        else:
+            self.orientation = "horizontal"
+            self.hor2.set_msg("hor")
 
-        if (ev.type == MOUSEBUTTONDOWN and self.control_keys.btn_left.collidepoint(ev.pos)) or (ev.type == KEYDOWN and ev.key == K_LEFT):
-            if self.snake.direction.x != 1:
-                self.snake.direction = Vector2(-1, 0)
-        elif (ev.type == MOUSEBUTTONDOWN and self.control_keys.btn_right.collidepoint(ev.pos)) or (ev.type == KEYDOWN and ev.key == K_RIGHT):
-            if self.snake.direction.x != -1:
-                self.snake.direction = Vector2(1, 0)
-        elif (ev.type == MOUSEBUTTONDOWN and self.control_keys.btn_up.collidepoint(ev.pos)) or (ev.type == KEYDOWN and ev.key == K_UP):
-            if self.snake.direction.y != 1:
-                self.snake.direction = Vector2(0, -1)
-        elif (ev.type == MOUSEBUTTONDOWN and self.control_keys.btn_down.collidepoint(ev.pos)) or (ev.type == KEYDOWN and ev.key == K_DOWN):
-            if self.snake.direction.y != -1:
-                self.snake.direction = Vector2(0, 1)
+            
+        if self.orientation == "vertical":
+            self.map_margin = self.dis_w/2 - self.map_resolution/2
+            self.control_keys.update_panel_pos(580, 1700)
+        else:
+
+            self.map_margin = self.dis_h/2 - self.map_resolution/2
+            self.control_keys.update_panel_pos(1500, 380)
+            #self.hor1.set_msg("ver")
+            
+    def draw_world(self):
+                self.window.fill((35, 50, 0), self.map)
+                self.draw_elements()
+                self.control_keys.draw_btns()
+                self.hor1.draw_message()
+                self.hor2.draw_message()
