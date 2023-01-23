@@ -23,8 +23,8 @@ class MAIN:
         self.control_keys = CONTROL_PANEL(580, 1700, window)
         
         self.hor1, self.hor2 = MESSAGE(500, 25, self.window), MESSAGE(500, 50, self.window)
-        
-        self.check_orientation()
+
+        #self.check_orientation()
         
         self.map = pygame.Rect((self.map_margin, self.map_margin), (map_resolution, map_resolution))
         
@@ -66,40 +66,39 @@ class MAIN:
         
     def handle_user_input(self, ev):
             if (ev.type == MOUSEBUTTONDOWN and self.control_keys.btn_left.collidepoint(ev.pos)) or (ev.type == KEYDOWN  and ev.key == K_LEFT):
-                if self.snake.direction.x != 1:
-                    self.snake.direction = Vector2(-1, 0)
+                self.snake.rotate_left()
             elif (ev.type == MOUSEBUTTONDOWN and self.control_keys.btn_right.collidepoint(ev.pos)) or (ev.type == KEYDOWN and ev.key == K_RIGHT):
-                if self.snake.direction.x != -1:
-                    self.snake.direction = Vector2(1, 0)
+                self.snake.rotate_right()
             elif (ev.type == MOUSEBUTTONDOWN and self.control_keys.btn_up.collidepoint(ev.pos)) or (ev.type == KEYDOWN and ev.key == K_UP):
-                if self.snake.direction.y != 1:
-                    self.snake.direction = Vector2(0, -1)
+                self.snake.rotate_up()
             elif (ev.type == MOUSEBUTTONDOWN and self.control_keys.btn_down.collidepoint(ev.pos)) or (ev.type == KEYDOWN and ev.key == K_DOWN):
-                if self.snake.direction.y != -1:
-                    self.snake.direction = Vector2(0, 1)
+                self.snake.rotate_down()
                     
     def check_orientation(self):
         self.dis_w, self.dis_h = self.window.get_size()
         if self.dis_w < self.dis_h:
             self.orientation = "vertical"
-            self.hor2.set_msg("ver")
+            #self.hor2.set_msg("ver")
         else:
             self.orientation = "horizontal"
-            self.hor2.set_msg("hor")
+            #self.hor2.set_msg("hor")
 
             
         if self.orientation == "vertical":
             self.map_margin = self.dis_w/2 - self.map_resolution/2
             self.control_keys.update_panel_pos(580, 1700)
+            self.snake.map_pos = self.map_margin
+            self.fruit.map_pos = self.map_margin
         else:
-
             self.map_margin = self.dis_h/2 - self.map_resolution/2
-            self.control_keys.update_panel_pos(1500, 380)
+            self.control_keys.update_panel_pos(1100, 380)
+            self.snake.map_pos = self.map_margin
+            self.fruit.map_pos = self.map_margin
             #self.hor1.set_msg("ver")
             
     def draw_world(self):
                 self.window.fill((35, 50, 0), self.map)
                 self.draw_elements()
                 self.control_keys.draw_btns()
-                self.hor1.draw_message()
-                self.hor2.draw_message()
+                #self.hor1.draw_message()
+                #self.hor2.draw_message()

@@ -9,6 +9,7 @@ class SNAKE:
         self.body = [Vector2(5, 2), Vector2(5, 1), Vector2(5, 0)]
         self.window = window
         self.size = size
+        self.potential_direction = Vector2(0,1)
         self.direction = Vector2(0,1)
         self.new_block = False
         self.map_pos = map_pos
@@ -96,6 +97,8 @@ class SNAKE:
             self.tail = self.tail_down
             
     def move_snake(self):
+        self.direction = self.potential_direction
+
         if self.new_block == True:
             body_copy = self.body[:]
             self.new_block = False
@@ -107,6 +110,21 @@ class SNAKE:
         
     def add_block(self):
         self.new_block = True
-        
+
+    def rotate_left(self):
+        if self.direction.x != 1:
+            self.potential_direction = Vector2(-1, 0)
+
+    def rotate_right(self):
+        if self.direction.x != -1:
+            self.potential_direction = Vector2(1, 0)
+
+    def rotate_up(self):
+        if self.direction.y != 1:
+            self.potential_direction = Vector2(0, -1)
+
+    def rotate_down(self):
+        if self.direction.y != -1:
+            self.potential_direction = Vector2(0, 1)
 
         

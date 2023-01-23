@@ -10,7 +10,7 @@ from main import MAIN
 
 pygame.init()
 # Resolution is ignored on Android
-window = pygame.display.set_mode((1080, 720), pygame.DOUBLEBUF,  32)
+window = pygame.display.set_mode((1360, 720), pygame.DOUBLEBUF,  32)
 
 red=(255,0,0)
 green=(0,255,0)
