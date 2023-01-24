@@ -11,6 +11,8 @@ class MAIN:
     def __init__(self, window, cell_size, map_size, map_resolution):
         
         self.window = window
+        self.cell_size = cell_size
+        self.map_size = map_size
         
         self.dis_w, self.dis_h = self.window.get_size()
         
@@ -43,6 +45,7 @@ class MAIN:
          self.check_fail()
          
     def draw_elements(self):
+         self.draw_grass()
          self.fruit.draw_fruit()
          self.snake.draw_snake()
 
@@ -102,3 +105,20 @@ class MAIN:
                 self.control_keys.draw_btns()
                 #self.hor1.draw_message()
                 #self.hor2.draw_message()
+
+    def draw_grass(self):
+        grass_color = (35, 65, 18)
+
+        for row in range(self.map_size):
+            if row % 2 == 0:
+                for col in range(self.map_size):
+                    if col % 2 == 0:
+                        grass_rect = pygame.Rect(self.map_margin + (col * self.cell_size), self.map_margin + (row * self.cell_size), self.cell_size, self.cell_size)
+                        pygame.draw.rect(self.window, grass_color, grass_rect)
+            else:
+                for col in range(self.map_size):
+                    if col % 2 != 0:
+                        grass_rect = pygame.Rect(self.map_margin + (col * self.cell_size),
+                                                 self.map_margin + (row * self.cell_size), self.cell_size,
+                                                 self.cell_size)
+                        pygame.draw.rect(self.window, grass_color, grass_rect)

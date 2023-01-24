@@ -1,10 +1,6 @@
-import sys
 import pygame
 from pygame.locals import *
-from pygame.math import Vector2
-from player import SNAKE
 from message import MESSAGE
-from fruit import FRUIT
 from main import MAIN
 
 
@@ -39,7 +35,7 @@ def blitWalls(suf, color, size, map):
         y = i//10 * size
         if(map[i] == 1):
             pygame.draw.rect(suf, color, [x, y, size, size])
-            msg(str(map[i]), red, x + size/2, y)
+            #msg(str(map[i]), red, x + size/2, y)
             
 def game():
     
