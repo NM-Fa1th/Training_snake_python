@@ -1,3 +1,6 @@
+#!/usr/bin/python
+import sys
+
 import pygame
 from pygame.locals import *
 from message import MESSAGE
@@ -5,6 +8,7 @@ from main import MAIN
 
 
 pygame.init()
+pygame.mixer.pre_init(44100, -16, 2, 512)
 # Resolution is ignored on Android
 window = pygame.display.set_mode((1360, 720), pygame.DOUBLEBUF,  32)
 
@@ -50,7 +54,7 @@ def game():
 
     fps=30
     
-    speed = 1
+    speed = 1.5
     
     #create game
     main_game = MAIN(window, cell_size, map_size, map_resolution)
@@ -65,14 +69,15 @@ def game():
         
         for ev in pygame.event.get():
             if ev.type == QUIT:
-                main_game.game_over()
+                pygame.quit()
+                sys.exit()
             if ev.type == SCREEN_UPDATE:
                 main_game.update()
             if ev.type == MOUSEBUTTONDOWN or ev.type == KEYDOWN:
                 main_game.handle_user_input(ev)
 
         #draw bg
-        window.fill((100, 140, 0))
+        window.fill((100 * 0.9, 140 * 0.9, 0))
         
         #draw world
         main_game.draw_world()

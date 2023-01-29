@@ -39,7 +39,8 @@ class MAIN:
     def update(self):
          self.check_orientation()
          self.map = pygame.Rect((self.map_margin, self.map_margin), (self.map_resolution, self.map_resolution))
-         
+
+         print("move")
          self.snake.move_snake()
          self.check_collision()
          self.check_fail()
@@ -48,24 +49,31 @@ class MAIN:
          self.draw_grass()
          self.fruit.draw_fruit()
          self.snake.draw_snake()
+         self.draw_score()
 
-         
     def check_collision(self):
-          if self.fruit.pos == self.snake.body[0]:
-              self.fruit.randomize()
-              self.snake.add_block()
+        if self.fruit.pos == self.snake.body[0]:
+            self.fruit.randomize()
+            self.snake.add_block()
+            self.snake.play_crunch_snd()
+
+        for block in self.snake.body[1:]:
+            if block == self.fruit.pos:
+                self.fruit.randomize()
               
     def check_fail(self):
         if not 0 <= self.snake.body[0].x < self.fruit.map_w or not 0 <= self.snake.body[0].y < self.fruit.map_h:
+            print("game over wall")
             self.game_over()
             
         for block in self.snake.body[1:]:
             if block == self.snake.body[0]:
+                print("game over body" + str(self.snake.body) + str(block))
                 self.game_over()
                 
     def game_over(self):
-        pygame.quit()
-        sys.exit()
+        self.snake.play_game_over_snd()
+        self.snake.reset()
         
     def handle_user_input(self, ev):
             if (ev.type == MOUSEBUTTONDOWN and self.control_keys.btn_left.collidepoint(ev.pos)) or (ev.type == KEYDOWN  and ev.key == K_LEFT):
@@ -100,14 +108,14 @@ class MAIN:
             #self.hor1.set_msg("ver")
             
     def draw_world(self):
-                self.window.fill((35, 50, 0), self.map)
+                self.window.fill((35 * 1.2, 50 * 1.2, 0), self.map)
                 self.draw_elements()
                 self.control_keys.draw_btns()
                 #self.hor1.draw_message()
                 #self.hor2.draw_message()
 
     def draw_grass(self):
-        grass_color = (35, 65, 18)
+        grass_color = (35 * 1.2, 65 * 1.2, 18 * 1.2)
 
         for row in range(self.map_size):
             if row % 2 == 0:
@@ -122,3 +130,18 @@ class MAIN:
                                                  self.map_margin + (row * self.cell_size), self.cell_size,
                                                  self.cell_size)
                         pygame.draw.rect(self.window, grass_color, grass_rect)
+
+    def draw_score(self):
+        font_style = pygame.font.SysFont(None, 80)
+        score_text = str(len(self.snake.body) - 3)
+        score_surface = font_style.render(score_text, True, (60, 80, 20))
+        score_x = (self.map_margin + (self.cell_size * self.map_size) - 60)
+        score_y = (self.map_margin + (self.cell_size * self.map_size) - 40)
+        score_rect = score_surface.get_rect(center=(score_x, score_y))
+        apple_rect = self.fruit.img.get_rect(midright = (score_rect.left, score_rect.centery))
+        bg_rect = pygame.Rect(apple_rect.left, apple_rect.top, apple_rect.width + score_rect.width, apple_rect.height)
+
+        pygame.draw.rect(self.window, (167, 209, 61), bg_rect)
+        self.window.blit(score_surface, score_rect)
+        self.window.blit(self.fruit.img, apple_rect)
+        pygame.draw.rect(self.window, (60*1.5, 80*1.5, 20*1.5), bg_rect, 3)

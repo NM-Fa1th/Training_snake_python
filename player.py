@@ -6,7 +6,7 @@ from message import MESSAGE
 
 class SNAKE:
     def __init__(self, window, size, map_pos):
-        self.body = [Vector2(5, 2), Vector2(5, 1), Vector2(5, 0)]
+        self.body = [Vector2(5, 3), Vector2(5, 2), Vector2(5, 1)]
         self.window = window
         self.size = size
         self.potential_direction = Vector2(0,1)
@@ -31,7 +31,11 @@ class SNAKE:
         self.body_tr = pygame.image.load("body_tr.png").convert_alpha()
         self.body_bl = pygame.image.load("body_bl.png").convert_alpha()
         self.body_br = pygame.image.load("body_br.png").convert_alpha()
-        
+
+        self.crunch_sound = pygame.mixer.Sound('snake_crunch.wav')
+        self.move_sound = pygame.mixer.Sound('snake_move.wav')
+        self.game_over = pygame.mixer.Sound('game_over.wav')
+
         self.head = self.head_down
         self.tail = self.tail_down
         
@@ -107,6 +111,7 @@ class SNAKE:
 
         body_copy.insert(0, body_copy[0] + self.direction)
         self.body = body_copy[ : ]
+        self.play_move_snd()
         
     def add_block(self):
         self.new_block = True
@@ -126,5 +131,20 @@ class SNAKE:
     def rotate_down(self):
         if self.direction.y != -1:
             self.potential_direction = Vector2(0, 1)
+
+    def play_crunch_snd(self):
+        self.crunch_sound.play()
+
+    def play_move_snd(self):
+        self.move_sound.play()
+
+    def play_game_over_snd(self):
+        self.game_over.play()
+
+    def reset(self):
+        self.body = [Vector2(5, 3), Vector2(5, 2), Vector2(5, 1)]
+        self.direction = Vector2(0, 1)
+        self.potential_direction = Vector2(0, 1)
+
 
         
